@@ -1,0 +1,5 @@
+id,name,role,is_active,join_date
+1,John Doe,admin,true,2023-01-15
+2,Jane Smith,user,true,2023-02-20
+3,Bob Johnson,moderator,false,2023-03-10
+4,Alice Brown,user,true,2023-04-05
