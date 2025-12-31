@@ -1,0 +1,5 @@
+filename,wordsCount,numberscount,uniquewords
+file1,0,0,0
+file2,10,0,4
+file3,488,6,311
+file4,0,61,61

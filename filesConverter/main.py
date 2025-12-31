@@ -25,6 +25,7 @@ print("numb count:",analyzer.countNumbs(fpath))
 print("unique words count:",analyzer.uniqueWcount(fpath))'''
 
 alldicts=make_dictlist(paths)
+print("rows:",alldicts)
 print("filese in convertion process:",paths)
 input("press Enter to convert ...")
 
@@ -32,3 +33,5 @@ input("press Enter to convert ...")
 with open('allfileslog.csv','w',newline='') as csvfile:
     fields=alldicts[0].keys()
     writer=csv.DictWriter(csvfile,fieldnames=fields)
+    writer.writeheader()
+    writer.writerows(alldicts)

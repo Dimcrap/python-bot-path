@@ -46,8 +46,9 @@ def makeDict(path):
             "numberscount":analyzer.countNumbs(path),"uniquewords":analyzer.uniqueWcount(path)}
 
 def make_dictlist(pathlist):
-    list=[{}]
+    list=[]
     for path in pathlist:
-        m_dict=analyzer.countNumbs(path)
+        #print("path for ")
+        m_dict=makeDict(path)
         list.append(m_dict)
     return list
