@@ -1,62 +1,62 @@
 import requests
 import json
 import secrets
+import pprint
 
 articles=None
 
 def extractUsfulData(artcId):
-    artcNum=None
-    for index,article in articles:
+    artc=None
+    #print(type(articles))
+    for article in articles:
         if article['article_id']==artcId:
-            artcNum=index
+            artc=article
             break
-    if artcNum==None:
-        print("didn't find the article")
+    if artc==None:
+        print("Error! didn't find the article")
 
     articleDict={
-        "title":articles[artcNum]['title'],
-        "link":articles[artcNum]['link'],
+        "title":artc ['title'],
+        "link":artc ['link'],
         #descreaption
-        "creator":articles[artcNum]['creator'],
-        "country":articles[artcNum]['country'],
-        "image":articles[artcNum]['image_url'],
+        "creator":artc ['creator'],
+        "country":artc ['country'],
+        "image":artc ['image_url'],
     }
     return articleDict    
     
 def searchbyCategory(category):
-    list=None
+    list=[]
     for article in articles:
-        if category in article['category'].values():
+        #print("articles cats:",article['category'])
+        if category in article['category']:
+            #print(f"{category} did exists in this article{article['article_id']}")
             list.append(article["article_id"])
     return list
     
-
 def getAarticle(category):
     #print(category.lower())
     Rarticle=None
     catsList=searchbyCategory(category.lower())
-    print(catsList)
-    '''
+    #print(catsList)
     if not catsList:
         print(f"failed to load aticles with '{category}' as category ")
     else:
-        Rarticle=secrets.choice(catsList)'''
+        Rarticle=secrets.choice(catsList)
+    return Rarticle
     
-
-categories=['Domestic','Tourism','World','Environment','Top']
-m_url="https://newsdata.io/api/1/latest?apikey=pub_fd65230a260d4cdeafc9fe6568a593fc&q=news&category=top,tourism,world,environment,domestic"
+categories=['Domestic','Tourism','World','Environment','Health']
+m_url="https://newsdata.io/api/1/latest?apikey=pub_fd65230a260d4cdeafc9fe6568a593fc&category=domestic,tourism,world,environment,health"
 responde=requests.get(m_url)
 data=None
 
 if responde.status_code!=200:
     print("failed to get newsdata api")
 else:
-    #print("got the respons")
     data=responde.json()
 
 articles=data['results']
-#print("article count",len(articles))
-#print(articles[4])
+
 
 print(r"""\                       __.....__                   .     .--.   _..._                          _..._         __.....__                      
 ||                  .-''         '.               .'|     |__| .'     '.   .--./)             .'     '.   .-''         '.         _     _    
@@ -80,7 +80,8 @@ while select.isnumeric()==False or int(select)<1 or int(select)>5:
     select=input()
 
 outputarticle=getAarticle((categories[int(select)-1]))
-#outputarticle=getAarticle('top')
-#print(extractUsfulData(outputarticle['article_id']))
-#print(outputarticle)
-#print(articles)
+if not outputarticle:
+    print(f"no news available with {(categories[int(select)-1])}category")
+else:
+    pprint.PrettyPrinter(indent=True).pprint(extractUsfulData(outputarticle))
+    
