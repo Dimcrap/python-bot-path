@@ -1,0 +1,4 @@
+user_id,reminder_time,message,status,created_at
+12345,2024-01-25 15:30:00,Team meeting in Conference Room A,pending,2024-01-25 09:00:00
+67890,2024-01-25 18:00:00,Gym session - legs day,pending,2024-01-25 10:15:00
+12345,2024-01-26 09:00:00,Daily standup meeting,pending,2024-01-25 14:20:00
