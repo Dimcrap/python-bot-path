@@ -1,13 +1,6 @@
-{
-  "lastIDs": {
-    "lastUsr": 12,
-    "lastgroup": 1
-  },
-  "users": {
-    "1": {
-      "name": "valuename"
-    }
-  },
-  "chats": {},
-  "responses": {}
-}
+{"lastIDs": {"lastUsr": 2, "lastgroup": 1},
+ "users": {"2": 
+ {"prefrences": {"getnews": "on", "getGtoupLinks": "off"},
+  "name": "amm", "chatStaus": "Authenticated", "language": "per",
+   "createDate": "2026-01-07 20:25:46.522834"}},
+    "chats": {}, "responses": {}}
