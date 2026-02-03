@@ -1,36 +1,48 @@
 import random
+import threading
 import datetime
+import time
+
 
 class mockAPI:
     messages_queue=[]
     bots_replies=[]
     
-    def add_to_queue(msg):
-        mockAPI.messages_queue.append(msg)
+    def add_to_queue(self,msg):
+        self.messages_queue.append(msg)
 
-    def get_updates():
-        if mockAPI.messages_queue:
-            return mockAPI.messages_queue[0]
+    def get_updates(self):
+        if self.messages_queue:
+            message=self.messages_queue[0]
+            del self.messages_queue[0]
+            return message
         else:
             return -1
 
-    def sendMessage(self,chatId,textmsg):
-        responde={"chat_id":chatId,"message":textmsg}
-        self.bots_replies.append(responde)
-
-    def invoke_bot_response():
+    def get_rep_updates(self,ID):
+        if self.bots_replies:
+           indx=0
+           for rep in self.bots_replies:
+                if(rep["user_id"]==ID):
+                    reply=rep
+                    
+           indx=self.bots_replies.index(reply)
+           del self.bots_replies[indx]
+           return reply
+        else:
+            return -1    
         
        
-
 class Chatbot:
    
-   def __init__(self,api_instance):
+    def __init__(self,api_instance):
         self.api=api_instance
-   #     self.state="start"
+    #     self.state="start"
+        self.thread=threading.Thread(target=self._check_loop,daemon=True)
     
-   options="/help\t/cancel\t/start\n/calculate" 
-   help="this is a testing chatbot \nthere will be options available:\n"+options
-   advices=["Set goals — Don’t expect to achieve anything if you don’"
+    options="/help\t/cancel\t/start\n/advice" 
+    help="this is a testing chatbot \nthere will be options available:\n"+options
+    advices=["Set goals — Don’t expect to achieve anything if you don’"
             "t know what your end goal is supposed to be. Set destination, then set sail.",
             "Celebrate all the successes — no matter how small, a win is a win, especially "
             "when we take losses harder than we should. Take advantage of it.",
@@ -45,13 +57,22 @@ class Chatbot:
             "told what to do. This separates successful from the mediocre"
             ]
 
-   def insertReply(self,replytxt):
+    def start(self):
+        self.thread.start()
+    
+    def _check_loop(self):
+       while True:
+           message=self.api.get_updates()
+           if not message==-1:
+               self.handle_message(message)
+               
+           time.sleep(0.1)
+               
+    def insertReply(self,replytxt):
        self.api.bots_replies.append(replytxt)
-       
-        
-   def handle_message(self):
+           
+    def handle_message(self,msg):
         reply=""
-        msg=self.api.get_updates()
         txt=msg["text"]
         usr=msg["from"]
         msgID= msg["message_id"]
@@ -68,9 +89,8 @@ class Chatbot:
            reply=Chatbot.advices[random.randint(0,6)]
         else:
            reply="unavalid input"
-        Chatbot.insertReply({"method":"sendMessage","user_id":usr["id"],
+        self.insertReply({"method":"sendMessage","user_id":usr["id"],
                              "message_id":msgID,"chat_id":chatID["id"],"text":reply})
-
 
 
 class clientInterface:
@@ -78,21 +98,46 @@ class clientInterface:
     def __init__(self,api_instance):
         self.api=api_instance
         self.userId=random.randint(1,100)
+        self.thread=threading.Thread(target=self._check_loop,daemon=True)
+
+
+    def showReply(self,botReply):
+        print(botReply["text"])
+
+    def _check_loop(self):
+        while True:
+            reply=self.api.get_rep_updates(self.userId)
+            if reply!=-1:
+                self.showReply(reply)
+            time.sleep(0.1)
+
+    def start(self):
+        self.thread.start()
 
     def create_message(self,txt):
         return {
         "message_id": random.randint(1,100000),
         "from": {"id": self.userId},
         "chat": {"id": 456},
-        "text": txt ,#"/start",
+        "text": txt ,
         "date": datetime.datetime.now()
         }
         
-    def client_sendmsg(self,text,mockAPI):
-        message=clientInterface.create_message(text)
+    def client_sendmsg(self,text):
+        message=self.create_message(text)
         self.api.add_to_queue(message)
 
+
 telegramapi=mockAPI()
-bot=Chatbot()
+bot=Chatbot(telegramapi)
 interface=clientInterface(telegramapi)
-while 
+bot.start()
+interface.start()
+
+
+
+#interface.client_sendmsg("/start")
+interface.client_sendmsg("/advice")
+time.sleep(3)
+#print(telegramapi.messages_queue)
+
